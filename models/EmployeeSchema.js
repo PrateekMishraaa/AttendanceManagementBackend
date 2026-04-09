@@ -4,24 +4,21 @@ const bcrypt = require('bcryptjs');
 const employeeSchema = new mongoose.Schema({
   employeeId: {
     type: String,
-    required: [true, 'Employee ID is required'],
+    required: true,
     unique: true,
-    trim: true,
   },
   name: {
     type: String,
-    required: [true, 'Name is required'],
-    trim: true,
+    required: true,
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: true,
     unique: true,
-    lowercase: true,
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: true,
   },
   phone: {
     type: String,
@@ -29,45 +26,44 @@ const employeeSchema = new mongoose.Schema({
   },
   department: {
     type: String,
-    enum: ['IT', 'HR', 'Finance', 'Sales', 'Marketing', 'Operations'],
+    required: true,
+    enum: ['IT', 'HR', 'Finance', 'Marketing', 'Sales', 'Operations', 'Administration'],
     default: 'IT',
   },
-  designation: {
+  role: {
     type: String,
+    enum: ['Employee', 'Admin', 'Manager'],
     default: 'Employee',
-  },
-  profileImage: String,
-  isActive: {
-    type: Boolean,
-    default: true,
   },
   joiningDate: {
     type: Date,
     default: Date.now,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  isActive: {
+    type: Boolean,
+    default: true,
   },
-  role:{
-    type:String,
-    required:true,
-    enum:["Admin","Employee"],
-    default:"Employee"
-  }
+  profileImage: {
+    type: String,
+    default: null,
+  },
+}, {
+  timestamps: true,
 });
 
 // Encrypt password before saving
-employeeSchema.pre('save', async function(next) {
+employeeSchema.pre('save', async function() {
   if (!this.isModified('password')) {
-    next();
+    return
+    //  next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  // next();
 });
 
-// Match password method
-employeeSchema.methods.matchPassword = async function(enteredPassword) {
+// Compare password method
+employeeSchema.methods.comparePassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

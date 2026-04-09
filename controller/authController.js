@@ -99,7 +99,10 @@ const loginEmployee = async (req, res) => {
       employeeId: isUserExist.employeeId,
       name: isUserExist.name,
       email: isUserExist.email,
-      role: isUserExist.role
+      role: isUserExist.role,
+      department:isUserExist.department,
+      date:isUserExist.joiningDate,
+      number:isUserExist.phone
     };
     
     // Generate token

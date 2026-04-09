@@ -5,6 +5,9 @@ const {
   markCheckOut,
   getAttendanceHistory,
   getTodayStatus,
+  getTodayLateEmployees,
+  getMonthlyAttendanceReport,
+  getLateReport
 } = require('../controller/attendanceController.js');
 const { protect } = require('../middleware/authMiddleware.js');
 const { verifyLocation } = require('../middleware/locationMiddleware.js');
@@ -12,12 +15,17 @@ const { verifyLocation } = require('../middleware/locationMiddleware.js');
 // All routes require authentication
 router.use(protect);
 
-// Attendance marking routes with location verification
+// Attendance marking routes
 router.post('/checkin', verifyLocation, markCheckIn);
 router.post('/checkout', verifyLocation, markCheckOut);
 
 // Query routes
 router.get('/history', getAttendanceHistory);
 router.get('/today', getTodayStatus);
+
+// NEW ROUTES - Late & Monthly Reports
+router.get('/today/late', getTodayLateEmployees);           // Today's late employees
+router.get('/monthly-report/:year/:month', getMonthlyAttendanceReport); // Monthly report
+router.get('/late-report', getLateReport);                  // Custom late report
 
 module.exports = router;
