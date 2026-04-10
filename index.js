@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
 const rateLimiter = require('express-rate-limit')
+
 // Load env vars
 dotenv.config();
 
@@ -35,6 +36,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Enable CORS
+
+const corsOptions = {
+  origin: [
+    'https://luminous-conkies-5746d0.netlify.app',
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:5000'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(cors());
 
 // Mount routes - ORDER MATTERS! Put specific routes before general ones
