@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
-
+const rateLimiter = require('express-rate-limit')
 // Load env vars
 dotenv.config();
 
@@ -16,7 +16,21 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
+
+const limiter = rateLimiter({
+  windowMs: 10 * 60 * 1000, 
+  max: 40, 
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes'
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  skipSuccessfulRequests: false, // Count successful requests too
+  skipFailedRequests: false, // Count failed requests too
+});
 // Body parser
+app.use(limiter)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
