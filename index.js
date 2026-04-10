@@ -51,7 +51,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+
 app.use(cors());
 
 // Mount routes - ORDER MATTERS! Put specific routes before general ones
