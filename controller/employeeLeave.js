@@ -130,7 +130,17 @@ const employeeLeave = async (req, res) => {
     });
   }
 };
-
+const getAllLeaves= async(req,res)=>{
+  try{
+    const allLeaves = await EmployeeApplication.find()
+    console.log('all leaves',allLeaves)
+    return res.status(200).json({message:"All leaves fetched from database",allLeaves})
+  }catch(error){
+    console.log('error',error)
+    return res.status(500).json({message:"failed to get all leaves"})
+  }
+}
 module.exports = {
   employeeLeave,
+  getAllLeaves
 };
