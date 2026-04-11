@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
   origin: [
-    'https://dancing-mochi-d8de80.netlify.app',
+    'https://aquamarine-seahorse-de6bc1.netlify.app',
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5000'
