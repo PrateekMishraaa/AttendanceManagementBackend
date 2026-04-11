@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
   origin: [
-    'https://aquamarine-seahorse-de6bc1.netlify.app',
+    'https://monumental-baklava-4913ec.netlify.app',
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5000'
