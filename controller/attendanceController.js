@@ -96,6 +96,7 @@ const markCheckOut = async (req, res) => {
 
     // Find today's attendance
     const attendance = await Attendance.findOne({ employeeId, date: today });
+    console.log('this is console attandance',attendance)
     
     if (!attendance || !attendance.checkInTime) {
       return res.status(400).json({
@@ -112,6 +113,7 @@ const markCheckOut = async (req, res) => {
     }
 
     const checkOutTime = time || new Date().toLocaleTimeString('en-US', { hour12: false });
+    console.log('this is checkout time',checkOutTime)
     attendance.checkOutTime = checkOutTime;
     attendance.checkOutLocation = { latitude, longitude };
     
@@ -480,6 +482,17 @@ const getLateReport = async (req, res) => {
     });
   }
 };
+
+const deleteAllAttandance = async(req,res)=>{
+  try{
+    const attandancedelete = await Attendance.deleteMany()
+    console.log('deleted',attandancedelete)
+    return res.status(200).json({message:"Admin deleted the Attandance",attandancedelete})
+  }catch(error){
+    console.log('error',error)
+    return res.status(500).json({message:"Internal server error",error})
+  }
+}
 module.exports = {
   markCheckIn,
   markCheckOut,
@@ -487,5 +500,6 @@ module.exports = {
   getTodayStatus,
     getTodayLateEmployees,     // New
   getMonthlyAttendanceReport, // New
-  getLateReport   
+  getLateReport   ,
+  deleteAllAttandance
 };

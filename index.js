@@ -14,7 +14,7 @@ connectDB();
 const authRoutes = require('./routes/authRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-
+const employeeLeave = require('./routes/leaveRoutes.js')
 const app = express();
 
 
@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
   origin: [
-    'https://idyllic-jalebi-87966b.netlify.app',
+    'https://dancing-mochi-d8de80.netlify.app',
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5000'
@@ -58,6 +58,7 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/leave',employeeLeave)
 
 // Root route
 app.get('/', (req, res) => {

@@ -7,7 +7,8 @@ const {
   getTodayStatus,
   getTodayLateEmployees,
   getMonthlyAttendanceReport,
-  getLateReport
+  getLateReport,
+  deleteAllAttandance
 } = require('../controller/attendanceController.js');
 const { protect } = require('../middleware/authMiddleware.js');
 const { verifyLocation } = require('../middleware/locationMiddleware.js');
@@ -26,6 +27,7 @@ router.get('/today', getTodayStatus);
 // NEW ROUTES - Late & Monthly Reports
 router.get('/today/late', getTodayLateEmployees);           // Today's late employees
 router.get('/monthly-report/:year/:month', getMonthlyAttendanceReport); // Monthly report
-router.get('/late-report', getLateReport);                  // Custom late report
+router.get('/late-report', getLateReport);   
+router.delete('/delete-all-attandance', deleteAllAttandance);                  // Custom late report
 
 module.exports = router;
