@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
   origin: [
-    'https://monumental-baklava-4913ec.netlify.app',
+    'https://adorable-banoffee-294d16.netlify.app',
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5000'
