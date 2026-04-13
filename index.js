@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
   origin: [
-    'https://unrivaled-hummingbird-6f9dfe.netlify.app',
+    'https://clinquant-otter-22c20a.netlify.app',
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5000'
