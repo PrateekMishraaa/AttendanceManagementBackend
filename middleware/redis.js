@@ -1,8 +1,10 @@
-const {createClient}  = require('redis')
+// const {createClient} = require('redis');
 
+// const client = createClient({
+//   url: 'redis://localhost:6379' // Default port
+// });
 
-async function startRedish(){
-    const client = createClient({
-        url:"redis://localhost:"
-    })
-}
+// client.on('error', (err) => console.log('Redis Client Error', err));
+
+// await client.connect();
+// console.log('Connected to Redis!');
