@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/database');
 const rateLimiter = require('express-rate-limit')
 
+
 // Load env vars
 dotenv.config();
 
@@ -12,6 +13,7 @@ connectDB();
 
 // Route files
 const authRoutes = require('./routes/authRoutes');
+const employeeWork = require('./routes/employeWork.js')
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const employeeLeave = require('./routes/leaveRoutes.js')
@@ -59,6 +61,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/leave',employeeLeave)
+app.use('/api/work',employeeWork)
 
 // Root route
 app.get('/', (req, res) => {
