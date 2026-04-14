@@ -41,7 +41,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
   origin: [
-    'https://clinquant-otter-22c20a.netlify.app',
+    'https://effervescent-sable-269b49.netlify.app',
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5000'
