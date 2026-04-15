@@ -54,7 +54,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// app.use(cors());/
+// app.use(cors());
 
 // Mount routes - ORDER MATTERS! Put specific routes before general ones
 app.use('/api/auth', authRoutes);
