@@ -121,8 +121,21 @@ const getEmployeeWorkByDate = async (req, res) => {
     }
 };
 
+
+const allEmployeeWork = async(req,res)=>{
+        try{
+            const allwork = await EmployeeWork.find()
+            console.log('all work',allwork)
+            return res.status(200).json({message:"all employee work",allwork})
+        }catch(error){
+            console.log('error',error)
+            return res.status(500).json({message:"Internal server error",error})
+        }
+}
+
 module.exports = {
     employeeTodaysWork,
     getEmployeeWorkHistory,
-    getEmployeeWorkByDate
+    getEmployeeWorkByDate,
+    allEmployeeWork
 };

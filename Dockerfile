@@ -16,5 +16,5 @@ COPY . .
 # Expose the port your app runs on
 EXPOSE 3000
 
-# Run the application
-CMD [ "node", "app.js" ]
+# Run the application - CHANGE THIS LINE
+CMD [ "node", "index.js" ]
