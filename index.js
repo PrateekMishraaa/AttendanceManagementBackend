@@ -19,7 +19,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const employeeLeave = require('./routes/leaveRoutes.js')
 const app = express();
 const client = require('./middleware/redis.js')
-
+const assinTask = require('./routes/assignTask.js')
 const limiter = rateLimiter({
   windowMs: 10 * 60 * 1000, 
   max: 40, 
@@ -62,6 +62,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/leave',employeeLeave)
 app.use('/api/work',employeeWork)
+app.use('/api/task',assinTask)
 
 // Root route
 app.get('/', (req, res) => {
