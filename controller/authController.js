@@ -9,7 +9,7 @@ const registerEmployee = async (req, res) => {
     const { employeeId, name, email, password, phone, department, role } = req.body;
 
     // Validation
-    if (!employeeId || !name || !email || !password || !phone) {
+    if (!employeeId || !name || !email || !password || !phone || !role) {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields: employeeId, name, email, password, phone'

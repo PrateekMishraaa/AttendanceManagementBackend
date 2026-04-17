@@ -18,7 +18,7 @@ const attendanceRoutes = require('./routes/attendanceRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const employeeLeave = require('./routes/leaveRoutes.js')
 const app = express();
-
+const client = require('./middleware/redis.js')
 
 const limiter = rateLimiter({
   windowMs: 10 * 60 * 1000, 
