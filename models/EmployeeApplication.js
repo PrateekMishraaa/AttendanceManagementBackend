@@ -10,7 +10,7 @@ const EmployeeApplicationSchema = new Schema(
       required: true,
     },
   
-    // Leave Type
+   
     LeaveType: {
       type: String,
       required: [true, "Leave type is required"],
@@ -29,7 +29,7 @@ const EmployeeApplicationSchema = new Schema(
     },
    
     
-    // Leave Duration
+   
     FromDate: {
       type: Date,
       required: [true, "Leave start date is required"],
@@ -111,7 +111,7 @@ const EmployeeApplicationSchema = new Schema(
     },
   
     
-    // Application Status & Tracking
+
     Status: {
       type: String,
       enum: ["Pending", "Approved", "Rejected", "Cancelled", "Under Review"],
@@ -135,7 +135,7 @@ const EmployeeApplicationSchema = new Schema(
   }
 );
 
-// Pre-save middleware to auto-calculate number of days
+
 EmployeeApplicationSchema.pre("save", function () {
   if (this.FromDate && this.ToDate) {
     const diffTime = Math.abs(this.ToDate - this.FromDate);
@@ -148,7 +148,7 @@ EmployeeApplicationSchema.pre("save", function () {
     }
   }
   
-  // Auto-set Resume Duty Date
+
   if (this.ToDate && !this.IsHalfDay) {
     const resumeDate = new Date(this.ToDate);
     resumeDate.setDate(resumeDate.getDate() + 1);
@@ -157,7 +157,7 @@ EmployeeApplicationSchema.pre("save", function () {
     this.ResumeDutyDate = this.FromDate;
   }
   
-  // next();
+
 });
 
 EmployeeApplicationSchema.index({ Employeid: 1, Status: 1 });

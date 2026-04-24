@@ -52,7 +52,7 @@ const attendanceSchema = new mongoose.Schema({
   },
 });
 
-// Compound index to ensure unique attendance per employee per day
+
 attendanceSchema.index({ employeeId: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('Attendance', attendanceSchema);

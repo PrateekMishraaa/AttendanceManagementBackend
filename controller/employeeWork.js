@@ -67,7 +67,7 @@ const getEmployeeWorkHistory = async (req, res) => {
     
     try {
         const workHistory = await EmployeeWork.find({ employeeId: id })
-            .sort({ date: -1 }); // Most recent first
+            .sort({ date: -1 }); 
         
         return res.status(200).json({
             success: true,
@@ -83,7 +83,7 @@ const getEmployeeWorkHistory = async (req, res) => {
     }
 };
 
-// Optional: Get work for a specific date
+
 const getEmployeeWorkByDate = async (req, res) => {
     const { id, date } = req.params;
     

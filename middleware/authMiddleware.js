@@ -9,15 +9,15 @@ const protect = async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     try {
-      // Get token from header
+     
       token = req.headers.authorization.split(' ')[1];
 
-      // Verify token
+     
       const decoded = jwt.verify(token, process.env.SECRETKEY);
       
-      console.log('Decoded token:', decoded); // Debugging
+      console.log('Decoded token:', decoded);
       
-      // ✅ FIXED: Find by _id (MongoDB ObjectId)
+      
       req.employee = await Employee.findById(decoded.id).select('-password');
 
       if (!req.employee) {
@@ -55,5 +55,6 @@ const adminOnly = (req, res, next) => {
     });
   }
 };
+
 
 module.exports = { protect, adminOnly };

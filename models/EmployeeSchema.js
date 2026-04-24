@@ -7,6 +7,10 @@ const employeeSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  designation:{
+    type:String,
+    required:true
+  },
   name: {
     type: String,
     required: true,
@@ -51,18 +55,18 @@ const employeeSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Encrypt password before saving
+
 employeeSchema.pre('save', async function() {
   if (!this.isModified('password')) {
     return
-    //  next();
+ 
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  // next();
+ 
 });
 
-// Compare password method
+
 employeeSchema.methods.comparePassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

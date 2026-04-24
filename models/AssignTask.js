@@ -32,6 +32,11 @@ const AssignTaskSchema = new mongoose.Schema({
         default:'',
         required:true
     },
+    status:{
+        type:String,
+        enum:['pending','completed'],
+        default:''
+    },
     expectedEndDate: {
         type: Date,
         required: [true, "Expected End Date is required"],

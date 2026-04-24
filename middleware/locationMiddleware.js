@@ -4,7 +4,7 @@ const { isWithinOfficeRadius } = require('../utills/distanceCalculator.js');
 const verifyLocation = async (req, res, next) => {
   try {
     const { latitude, longitude } = req.body;
-
+    console.log('this is cordinates',latitude,longitude)
     if (!latitude || !longitude) {
       return res.status(400).json({
         success: false,
@@ -12,9 +12,9 @@ const verifyLocation = async (req, res, next) => {
       });
     }
 
-    // Get active office location
-    const officeLocation = await OfficeLocation.findOne({ isActive: true });
 
+    const officeLocation = await OfficeLocation.findOne({ isActive: true });
+    console.log('this is office location',officeLocation)
     if (!officeLocation) {
       return res.status(404).json({
         success: false,
@@ -23,12 +23,13 @@ const verifyLocation = async (req, res, next) => {
     }
 
     const userLocation = { latitude, longitude };
+    console.log('this is user location',userLocation)
     const isWithinRadius = isWithinOfficeRadius(userLocation, {
       latitude: officeLocation.latitude,
       longitude: officeLocation.longitude,
       radius: officeLocation.radius,
     });
-
+    console.log('this is is within radius',isWithinRadius)
     if (!isWithinRadius) {
       return res.status(400).json({
         success: false,

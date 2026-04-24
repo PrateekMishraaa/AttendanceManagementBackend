@@ -149,7 +149,7 @@ const updateLeave = async (req, res) => {
   const { id } = req.params;
   const { Status } = req.body;
   
-  // Validate ID
+
   if (!id) {
     return res.status(400).json({ 
       success: false,
@@ -157,7 +157,7 @@ const updateLeave = async (req, res) => {
     });
   }
   
-  // Validate Status
+
   if (!Status) {
     return res.status(400).json({ 
       success: false,
@@ -165,7 +165,7 @@ const updateLeave = async (req, res) => {
     });
   }
   
-  // Valid statuses (matching your schema)
+
   const validStatuses = ["Pending", "Approved", "Rejected", "Cancelled", "Under Review"];
   if (!validStatuses.includes(Status)) {
     return res.status(400).json({ 
@@ -175,7 +175,7 @@ const updateLeave = async (req, res) => {
   }
   
   try {
-    // Check if ID is valid MongoDB ObjectId
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ 
         success: false,
@@ -183,7 +183,7 @@ const updateLeave = async (req, res) => {
       });
     }
     
-    // Find the leave application first to check if it exists
+ 
     const existingLeave = await EmployeeApplication.findById(id);
     
     if (!existingLeave) {
@@ -192,8 +192,7 @@ const updateLeave = async (req, res) => {
         message: `Leave application not found with ID: ${id}` 
       });
     }
-    
-    // Update only the status field
+
     const updatedLeave = await EmployeeApplication.findByIdAndUpdate(
       id,
       { 
@@ -202,8 +201,8 @@ const updateLeave = async (req, res) => {
         }
       },
       { 
-        new: true,           // Return the updated document
-        runValidators: true  // Run schema validations
+        new: true,         
+        runValidators: true  
       }
     );
     
@@ -280,7 +279,7 @@ const leavesById = async (req, res) => {
   }
 };
 
-// Updated getLeavesByEmployeeId function
+
 const getLeavesByEmployeeId = async (req, res) => {
   const { employeeId } = req.params;
   
@@ -292,34 +291,31 @@ const getLeavesByEmployeeId = async (req, res) => {
   }
   
   try {
-    // Clean the employeeId - remove any colons or special characters
+    
     let cleanEmployeeId = employeeId.toString().trim();
     
-    // Remove colon if present at the beginning
+    
     if (cleanEmployeeId.startsWith(':')) {
       cleanEmployeeId = cleanEmployeeId.substring(1);
     }
     
-    // Also remove any quotes if present
+   
     cleanEmployeeId = cleanEmployeeId.replace(/['"]+/g, '');
     
     console.log('Original Employee ID:', employeeId);
     console.log('Cleaned Employee ID:', cleanEmployeeId);
     
-    // Option 1: If Employeid is stored as ObjectId in your database
-    // First, check if the employeeId is a valid ObjectId format (24 hex chars)
+  
     const isValidObjectId = mongoose.Types.ObjectId.isValid(cleanEmployeeId);
     
     let query = {};
     
     if (isValidObjectId) {
-      // If it's a valid ObjectId, query by ObjectId
+    
       query = { Employeid: cleanEmployeeId };
       console.log('Querying by ObjectId');
     } else {
-      // If it's not an ObjectId (like employee code "EMP001"), query by string
-      // You need to check your schema - if Employeid is a reference to User model,
-      // you might need to find the user first by employeeCode
+     
       query = { Employeid: cleanEmployeeId };
       console.log('Querying by string ID');
     }

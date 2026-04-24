@@ -3,7 +3,7 @@ const Attendance = require('../models/AttendanceSchema.js');
 const OfficeLocation = require('../models/OfficeLocation.js');
 const redisCache = require('../middleware/redis.js');
 
-// Helper function to generate cache keys
+
 const CACHE_KEYS = {
   ALL_EMPLOYEES: 'employees:all',
   EMPLOYEE_BY_ID: (id) => `employee:${id}`,
@@ -14,12 +14,12 @@ const CACHE_KEYS = {
   OFFICE_LOCATION: 'office:location'
 };
 
-// @desc    Get all employees (CACHED)
+
 const getAllEmployees = async (req, res) => {
   const cacheKey = CACHE_KEYS.ALL_EMPLOYEES;
   
   try {
-    // Try to get from cache
+    
     const cachedData = await redisCache.get(cacheKey);
     
     if (cachedData) {
@@ -33,7 +33,7 @@ const getAllEmployees = async (req, res) => {
     
     console.log(`Cache MISS: ${cacheKey}, fetching from database`);
     
-    // Fetch from database
+ 
     const employees = await Employee.find().select('-password');
     
     const responseData = {
@@ -41,7 +41,7 @@ const getAllEmployees = async (req, res) => {
       data: employees,
     };
     
-    // Store in cache for 5 minutes (300 seconds)
+    
     await redisCache.set(cacheKey, responseData, 300);
     
     res.json({
@@ -57,12 +57,12 @@ const getAllEmployees = async (req, res) => {
   }
 };
 
-// @desc    Get employee by ID (CACHED)
+
 const getEmployeeById = async (req, res) => {
   const cacheKey = CACHE_KEYS.EMPLOYEE_BY_ID(req.params.id);
   
   try {
-    // Try to get from cache
+  
     const cachedData = await redisCache.get(cacheKey);
     
     if (cachedData) {
@@ -76,7 +76,7 @@ const getEmployeeById = async (req, res) => {
     
     console.log(`Cache MISS: ${cacheKey}, fetching from database`);
     
-    // Fetch from database
+    
     const employee = await Employee.findById(req.params.id).select('-password');
     
     if (!employee) {
@@ -86,7 +86,7 @@ const getEmployeeById = async (req, res) => {
       });
     }
     
-    // Store in cache for 10 minutes (600 seconds)
+   
     await redisCache.set(cacheKey, employee, 600);
     
     res.json({
@@ -102,7 +102,7 @@ const getEmployeeById = async (req, res) => {
   }
 };
 
-// @desc    Update employee (CLEAR CACHE)
+
 const updateEmployee = async (req, res) => {
   try {
     const employee = await Employee.findByIdAndUpdate(
@@ -118,7 +118,7 @@ const updateEmployee = async (req, res) => {
       });
     }
     
-    // Clear related caches
+ 
     await redisCache.del(CACHE_KEYS.ALL_EMPLOYEES);
     await redisCache.del(CACHE_KEYS.EMPLOYEE_BY_ID(req.params.id));
     
@@ -136,7 +136,7 @@ const updateEmployee = async (req, res) => {
   }
 };
 
-// @desc    Delete employee (CLEAR CACHE)
+
 const deleteEmployee = async (req, res) => {
   try {
     const employee = await Employee.findByIdAndDelete(req.params.id);
@@ -147,7 +147,7 @@ const deleteEmployee = async (req, res) => {
       });
     }
     
-    // Clear related caches
+
     await redisCache.del(CACHE_KEYS.ALL_EMPLOYEES);
     await redisCache.del(CACHE_KEYS.EMPLOYEE_BY_ID(req.params.id));
     
@@ -169,7 +169,7 @@ const alldeleteEmployee = async(req,res)=>{
   try{
     const allemployeeDelete = await Employee.deleteMany();
     
-    // Clear all employee-related caches
+   
     await redisCache.delPattern('employees:*');
     await redisCache.delPattern('employee:*');
     
@@ -183,15 +183,16 @@ const alldeleteEmployee = async(req,res)=>{
   }
 };
 
-// @desc    Get all attendance records (CACHED)
+
 const getAllAttendance = async (req, res) => {
   const { date, employeeId, department, startDate, endDate } = req.query;
+  console.log(date,employeeId,department,startDate,endDate,)
   const cacheKey = CACHE_KEYS.ALL_ATTENDANCE({ date, employeeId, department, startDate, endDate });
-  
+  console.log('cache key from admin controller',cacheKey)
   try {
-    // Try to get from cache
+  
     const cachedData = await redisCache.get(cacheKey);
-    
+    console.log('cached data from admin controller',cachedData)
     if (cachedData) {
       console.log(`Cache HIT: ${cacheKey}`);
       return res.json({
@@ -211,7 +212,7 @@ const getAllAttendance = async (req, res) => {
     }
     
     let attendanceQuery = Attendance.find(query).sort({ date: -1 });
-    
+    console.log('attendance query from admin controller',attendanceQuery)
     if (department) {
       const employees = await Employee.find({ department });
       const employeeIds = employees.map(e => e.employeeId);
@@ -219,7 +220,7 @@ const getAllAttendance = async (req, res) => {
     }
     
     const attendance = await attendanceQuery;
-    
+    console.log('attendance data from admin controller',attendance)
     const attendanceWithDetails = await Promise.all(
       attendance.map(async (record) => {
         const employee = await Employee.findOne({ employeeId: record.employeeId });
@@ -236,8 +237,9 @@ const getAllAttendance = async (req, res) => {
       count: attendanceWithDetails.length,
       data: attendanceWithDetails,
     };
+    console.log('response data from admin controller',responseData)
     
-    // Cache for 3 minutes (180 seconds) - attendance data changes frequently
+    
     await redisCache.set(cacheKey, responseData, 180);
     
     res.json({
@@ -254,15 +256,15 @@ const getAllAttendance = async (req, res) => {
   }
 };
 
-// @desc    Get attendance summary for all employees (CACHED)
+
 const getAttendanceSummary = async (req, res) => {
   const { startDate, endDate, department } = req.query;
   const cacheKey = CACHE_KEYS.ATTENDANCE_SUMMARY({ startDate, endDate, department });
-  
+  console.log('cache key from admin controller')
   try {
-    // Try to get from cache
+
     const cachedData = await redisCache.get(cacheKey);
-    
+      console.log('cached data from admin controller from redis cache',cachedData)
     if (cachedData) {
       console.log(`Cache HIT: ${cacheKey}`);
       return res.json({
@@ -290,7 +292,7 @@ const getAttendanceSummary = async (req, res) => {
       date: { $gte: startDateStr, $lte: endDateStr }
     });
     
-    // Calculate working days
+  
     let workingDays = 0;
     let currentDate = new Date(start);
     while (currentDate <= end) {
@@ -356,7 +358,7 @@ const getAttendanceSummary = async (req, res) => {
       data: summary
     };
     
-    // Cache for 5 minutes (300 seconds)
+  
     await redisCache.set(cacheKey, responseData, 300);
     
     res.json({
@@ -374,7 +376,7 @@ const getAttendanceSummary = async (req, res) => {
   }
 };
 
-// @desc    Get single employee attendance summary (CACHED)
+
 const getEmployeeAttendanceSummary = async (req, res) => {
   const { employeeId } = req.params;
   const { month, year } = req.query;
@@ -383,9 +385,9 @@ const getEmployeeAttendanceSummary = async (req, res) => {
   const cacheKey = CACHE_KEYS.EMPLOYEE_SUMMARY(employeeId, targetMonth, targetYear);
   
   try {
-    // Try to get from cache
+  
     const cachedData = await redisCache.get(cacheKey);
-    
+      console.log("cached hit by using API",cachedData)
     if (cachedData) {
       console.log(`Cache HIT: ${cacheKey}`);
       return res.json({
@@ -396,6 +398,7 @@ const getEmployeeAttendanceSummary = async (req, res) => {
     }
     
     console.log(`Cache MISS: ${cacheKey}, fetching from database`);
+    
     
     const startDate = `${targetYear}-${String(targetMonth).padStart(2, '0')}-01`;
     const endDate = new Date(targetYear, targetMonth, 0).toISOString().split('T')[0];
@@ -416,7 +419,7 @@ const getEmployeeAttendanceSummary = async (req, res) => {
     const presentRecords = attendanceRecords.filter(r => r.status === 'present');
     const lateRecords = attendanceRecords.filter(r => r.status === 'late');
     
-    // Calculate working days
+   
     let workingDays = 0;
     const dailyBreakdown = [];
     const currentDate = new Date(startDate);
@@ -482,7 +485,7 @@ const getEmployeeAttendanceSummary = async (req, res) => {
       dailyBreakdown
     };
     
-    // Cache for 5 minutes (300 seconds)
+  
     await redisCache.set(cacheKey, responseData, 300);
     
     res.json({
@@ -500,7 +503,7 @@ const getEmployeeAttendanceSummary = async (req, res) => {
   }
 };
 
-// @desc    Get monthly attendance report (CACHED)
+
 const getMonthlyAttendanceReport = async (req, res) => {
   const { month, year, department } = req.query;
   const targetMonth = month || new Date().getMonth() + 1;
@@ -508,7 +511,7 @@ const getMonthlyAttendanceReport = async (req, res) => {
   const cacheKey = CACHE_KEYS.MONTHLY_REPORT(targetMonth, targetYear, department);
   
   try {
-    // Try to get from cache
+   
     const cachedData = await redisCache.get(cacheKey);
     
     if (cachedData) {
@@ -535,7 +538,7 @@ const getMonthlyAttendanceReport = async (req, res) => {
       date: { $gte: startDate, $lte: endDate }
     });
     
-    // Calculate working days
+    
     let workingDays = 0;
     let currentDate = new Date(startDate);
     while (currentDate <= new Date(endDate)) {
@@ -596,7 +599,7 @@ const getMonthlyAttendanceReport = async (req, res) => {
       }
     };
     
-    // Cache for 10 minutes (600 seconds)
+ 
     await redisCache.set(cacheKey, responseData, 600);
     
     res.json({
@@ -614,7 +617,7 @@ const getMonthlyAttendanceReport = async (req, res) => {
   }
 };
 
-// @desc    Configure office location (CLEAR CACHE)
+
 const setOfficeLocation = async (req, res) => {
   try {
     const { latitude, longitude, radius, address, name } = req.body;
@@ -630,7 +633,6 @@ const setOfficeLocation = async (req, res) => {
       isActive: true,
     });
     
-    // Clear office location cache
     await redisCache.del(CACHE_KEYS.OFFICE_LOCATION);
     
     res.json({
@@ -646,12 +648,12 @@ const setOfficeLocation = async (req, res) => {
   }
 };
 
-// @desc    Get current office location (CACHED)
+
 const getOfficeLocation = async (req, res) => {
   const cacheKey = CACHE_KEYS.OFFICE_LOCATION;
   
   try {
-    // Try to get from cache
+
     const cachedData = await redisCache.get(cacheKey);
     
     if (cachedData) {
@@ -667,7 +669,7 @@ const getOfficeLocation = async (req, res) => {
     
     const officeLocation = await OfficeLocation.findOne({ isActive: true });
     
-    // Cache for 1 hour (3600 seconds)
+
     if (officeLocation) {
       await redisCache.set(cacheKey, officeLocation, 3600);
     }

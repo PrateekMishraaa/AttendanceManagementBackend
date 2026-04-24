@@ -2,17 +2,15 @@ const Attendance = require('../models/AttendanceSchema.js');
 const Employee = require('../models/EmployeeSchema.js');
 const { WORKING_HOURS } = require('../utills/constants.js');
 
-// Helper function to calculate working hours
 const calculateWorkingHours = (checkInTime, checkOutTime) => {
   if (!checkInTime || !checkOutTime) return 0;
   
   const checkIn = new Date(`1970/01/01 ${checkInTime}`);
   const checkOut = new Date(`1970/01/01 ${checkOutTime}`);
-  const diff = (checkOut - checkIn) / (1000 * 60 * 60); // hours
+  const diff = (checkOut - checkIn) / (1000 * 60 * 60); 
   return Math.max(0, diff);
 };
 
-// Helper function to determine status
 const determineStatus = (checkInTime) => {
   if (!checkInTime) return 'absent';
   
@@ -23,10 +21,7 @@ const determineStatus = (checkInTime) => {
   return 'present';
 };
 
-// @desc    Mark check-in
-// @route   POST /api/attendance/checkin
-// @desc    Mark check-in
-// @route   POST /api/attendance/checkin
+
 const markCheckIn = async (req, res) => {
   try {
     const { latitude, longitude, time } = req.body;
@@ -35,7 +30,7 @@ const markCheckIn = async (req, res) => {
     
     const today = new Date().toISOString().split('T')[0];
 
-    // Check if already checked in today
+
     let attendance = await Attendance.findOne({ employeeId, date: today });
     console.log('this is attendance', attendance);
     
@@ -52,9 +47,9 @@ const markCheckIn = async (req, res) => {
     const status = determineStatus(checkInTime);
 
     if (!attendance) {
-      // Create new attendance record
+   
       attendance = new Attendance({
-        employeeId,  // ← यह ObjectId होगा
+        employeeId, 
         date: today,
         checkInTime,
         checkInLocation: { latitude, longitude },
@@ -62,7 +57,7 @@ const markCheckIn = async (req, res) => {
         verified: true,
       });
     } else {
-      // Update existing record
+    
       attendance.checkInTime = checkInTime;
       attendance.checkInLocation = { latitude, longitude };
       attendance.status = status;
@@ -86,15 +81,13 @@ const markCheckIn = async (req, res) => {
   }
 };
 
-// @desc    Mark check-out
-// @route   POST /api/attendance/checkout
+
 const markCheckOut = async (req, res) => {
   try {
     const { latitude, longitude, time } = req.body;
-    const employeeId = req.employee._id;  // ← यहाँ भी change करें
+    const employeeId = req.employee._id;
     const today = new Date().toISOString().split('T')[0];
 
-    // Find today's attendance
     const attendance = await Attendance.findOne({ employeeId, date: today });
     console.log('this is console attandance',attendance)
     
@@ -117,11 +110,11 @@ const markCheckOut = async (req, res) => {
     attendance.checkOutTime = checkOutTime;
     attendance.checkOutLocation = { latitude, longitude };
     
-    // Calculate working hours
+   
     attendance.workingHours = calculateWorkingHours(attendance.checkInTime, checkOutTime);
     
-    // Calculate overtime (if any)
-    const standardHours = 9; // 9 hours including lunch
+   
+    const standardHours = 9;
     attendance.overtime = Math.max(0, attendance.workingHours - standardHours);
 
     await attendance.save();
@@ -144,11 +137,10 @@ const markCheckOut = async (req, res) => {
   }
 };
 
-// @desc    Get attendance history
-// @route   GET /api/attendance/history
+
 const getAttendanceHistory = async (req, res) => {
   try {
-    const employeeId = req.employee._id;  // ← यहाँ भी change करें
+    const employeeId = req.employee._id; 
     const { startDate, endDate, limit = 30 } = req.query;
     
     let query = { employeeId };
@@ -161,7 +153,7 @@ const getAttendanceHistory = async (req, res) => {
       .sort({ date: -1 })
       .limit(parseInt(limit));
     
-    // Calculate summary
+
     const summary = {
       totalPresent: history.filter(a => a.status === 'present').length,
       totalLate: history.filter(a => a.status === 'late').length,
@@ -184,11 +176,10 @@ const getAttendanceHistory = async (req, res) => {
   }
 };
 
-// @desc    Get today's status
-// @route   GET /api/attendance/today
+
 const getTodayStatus = async (req, res) => {
   try {
-    const employeeId = req.employee._id;  // ← यहाँ भी change करें
+    const employeeId = req.employee._id; 
     const today = new Date().toISOString().split('T')[0];
     
     const attendance = await Attendance.findOne({ employeeId, date: today });
@@ -210,7 +201,7 @@ const getTodayLateEmployees = async (req, res) => {
   try {
     const today = new Date().toISOString().split('T')[0];
     
-    // Find all attendance records for today with status 'late'
+  
     const lateRecords = await Attendance.find({ 
       date: today, 
       status: 'late' 

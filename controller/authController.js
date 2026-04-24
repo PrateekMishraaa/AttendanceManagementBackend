@@ -2,21 +2,19 @@ const Employee = require('../models/EmployeeSchema.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-// @desc    Register employee
-// @route   POST /api/auth/register
+
 const registerEmployee = async (req, res) => {
   try {
-    const { employeeId, name, email, password, phone, department, role } = req.body;
+    const { employeeId, name, email, password, phone, department, role,designation } = req.body;
 
-    // Validation
-    if (!employeeId || !name || !email || !password || !phone || !role) {
+    if (!employeeId || !name || !email || !password || !phone || !role || !designation) {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields: employeeId, name, email, password, phone'
       });
     }
 
-    // Check if employee exists
+
     const employeeExists = await Employee.findOne({ 
       $or: [{ employeeId }, { email }] 
     });
@@ -28,12 +26,13 @@ const registerEmployee = async (req, res) => {
       });
     }
 
-    // Create employee
+
     const employee = await Employee.create({
       employeeId,
       name,
       email,
       password,
+      designation,
       phone,
       department: department || 'IT',
       role: role || 'Employee'
@@ -47,6 +46,7 @@ const registerEmployee = async (req, res) => {
         employeeId: employee.employeeId,
         name: employee.name,
         email: employee.email,
+        designation:employee.designation,
         department: employee.department,
         role: employee.role
       },
@@ -60,8 +60,7 @@ const registerEmployee = async (req, res) => {
   }
 };
 
-// @desc    Login employee
-// @route   POST /api/auth/login
+
 const loginEmployee = async (req, res) => {
   const { employeeId, password } = req.body;
   
@@ -73,7 +72,7 @@ const loginEmployee = async (req, res) => {
   }
   
   try {
-    // Find user by employeeId (NOT by _id)
+    
     const isUserExist = await Employee.findOne({ employeeId });
     
     if (!isUserExist) {
@@ -82,8 +81,7 @@ const loginEmployee = async (req, res) => {
         message: "User not found with this Employee ID"
       });
     }
-    
-    // Check password
+
     const isMatch = await bcrypt.compare(password, isUserExist.password);
     
     if (!isMatch) {
@@ -93,9 +91,9 @@ const loginEmployee = async (req, res) => {
       });
     }
     
-    // ✅ FIXED: Create correct payload (NO PASSWORD, USE MongoDB _id)
+   
     const payload = {
-      id: isUserExist._id,           // ← MongoDB ObjectId (important!)
+      id: isUserExist._id,           
       employeeId: isUserExist.employeeId,
       name: isUserExist.name,
       email: isUserExist.email,
@@ -105,7 +103,7 @@ const loginEmployee = async (req, res) => {
       number:isUserExist.phone
     };
     
-    // Generate token
+   
     const token = jwt.sign(payload, process.env.SECRETKEY, { expiresIn: "30d" });
     
     console.log('Login successful for:', isUserExist.name);
@@ -134,8 +132,6 @@ const loginEmployee = async (req, res) => {
   }
 };
 
-// @desc    Get current employee profile
-// @route   GET /api/auth/me
 const getMe = async (req, res) => {
   try {
     const employee = await Employee.findById(req.employee._id).select('-password');
